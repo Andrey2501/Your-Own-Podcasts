@@ -15,6 +15,8 @@ namespace Entities.Models
         public DateTime PublicationDate { get; set; }
         public string Genre { get; set; }
         public int Views { get; set; }
-        public string Link { get; set; }
+        public string Description { get; set; }
+        public string FileName { get; set; }
+        public string ContentType { get; set; }
     }
 }

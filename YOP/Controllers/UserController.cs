@@ -10,8 +10,9 @@ using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using PetControlBackend.Models.UserModel;
+using YOP.Models.UserModel;
 using Repository;
+using YOP.Services;
 
 namespace PetControlBackend.Controllers
 {
@@ -21,10 +22,12 @@ namespace PetControlBackend.Controllers
     public class UserController : Controller
     {
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly AuthService _authService;
 
-        public UserController(IRepositoryWrapper repoWrapper)
+        public UserController(IRepositoryWrapper repoWrapper, AuthService authService)
         {
             _repoWrapper = repoWrapper;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -70,32 +73,69 @@ namespace PetControlBackend.Controllers
         }
 
         [HttpPut]
-        public IActionResult Edit([FromBody] EditViewModel userEdit)
+        public IActionResult Edit([FromBody] EditViewModel userViewEdit)
         {
             string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             string role = User.FindFirstValue(ClaimTypes.Role);
 
-            if (userEdit == null || (userEdit.Id.ToString() != id && role != "Admin"))
+            if (userViewEdit == null || (userViewEdit.Id.ToString() != id && role != "Admin"))
             {
                 return BadRequest("Editing data is incorrect");
             }
 
-            User user = _repoWrapper.User
-                .FindByCondition(u => u.Id == userEdit.Id)
-                .FirstOrDefault();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            IEnumerable<User> users = _repoWrapper.User
+                .FindByCondition(u => u.Id == userViewEdit.Id || u.Email == userViewEdit.Email)
+                .ToList();
+
+            if (users == null)
+            {
+                return NotFound();
+            }
+            if (users.Count() != 1) 
+            {
+                return BadRequest("Email alredy exist!");
+            }
+            User user = users.First();
+
+            var mapper = new Mapper(new MapperConfiguration(cfg =>
+                  cfg.CreateMap<EditViewModel, User>()));
+            User userEdit = mapper.Map<EditViewModel, User>(userViewEdit);
+            userEdit.Password = user.Password;
+            userEdit.Role = user.Role;
+
+            _repoWrapper.User.Update(userEdit);
+            _repoWrapper.Save();
+
+            return Ok(new { Success = true });
+        }
+        [HttpPatch, Route("password")]
+        public IActionResult ChangePassword([FromBody] EditPasswordUser editPassword)
+        {
+            if (editPassword == null || editPassword.NewPassword == null) 
+            {
+                return BadRequest("New password is incorrect");
+            }
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (id == null)
+            {
+                return Unauthorized("Token is incorrect");
+            }
+
+            User user = _repoWrapper.User.FindByConditionTrack(u => u.Id.ToString() == id).FirstOrDefault();
             if (user == null)
             {
                 return NotFound();
             }
-
-            var mapper = new Mapper(new MapperConfiguration(cfg =>
-                  cfg.CreateMap<EditViewModel, User>()));
-            user = mapper.Map<EditViewModel, User>(userEdit);
-
-            _repoWrapper.User.Update(user);
-
-            return Ok(new { Success = true });
+            string hashPassword = _authService.HashPassword(editPassword.NewPassword);
+            user.Password = hashPassword;
+            _repoWrapper.Save();
+            return Ok(new { success = true });
         }
     }
 }

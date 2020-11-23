@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PetControlBackend.Models.UserModel
+namespace YOP.Models.UserModel
 {
     public class UserViewModel
     {
