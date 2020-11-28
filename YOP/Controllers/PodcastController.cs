@@ -44,6 +44,7 @@ namespace PetControlBackend.Controllers
                 return BadRequest("UserId is incorrect");
             }
 
+
             Podcast podcast = new Podcast()
             {
                 UserId = user.Id,
