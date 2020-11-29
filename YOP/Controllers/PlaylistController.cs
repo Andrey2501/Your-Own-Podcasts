@@ -4,10 +4,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Contracts;
+using Entities;
 using Entities.Models;
+using Entities.QueryModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using YOP.Models.PlaylistModel;
 
 namespace YOP.Controllers
@@ -55,6 +58,59 @@ namespace YOP.Controllers
             _repoWrapper.Save();
 
             return Ok(playlist);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetPlaylistById(Guid id)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string role = User.FindFirstValue(ClaimTypes.Role);
+
+            Playlist playlist = _repoWrapper.Playlist
+                .FindByCondition(p => p.Id == id && (p.UserId.ToString() == userId || role == "Admin"))
+                .FirstOrDefault();
+
+            if (playlist == null)
+            {
+                return BadRequest("PlaylistId is incorrect");
+            }
+
+            return Ok(playlist);
+        }
+        [HttpGet, Route("list")]
+        public IActionResult GetListPlaylist([FromQuery] PlaylistParameters parameters)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("Token is incorrect");
+            }
+
+            PagedList<Playlist> playlists = _repoWrapper.Playlist
+                .FindByCondition(p => p.UserId.ToString() == userId, parameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(playlists.MetaData));
+
+            return Ok(playlists);
+        }
+        [HttpDelete("{id}"), Authorize]
+        public IActionResult DeleteById(Guid id)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string role = User.FindFirstValue(ClaimTypes.Role);
+            Playlist playlist = _repoWrapper.Playlist
+                .FindByCondition(p => p.Id == id && (p.UserId.ToString() == userId || role == "Admin"))
+                .FirstOrDefault();
+
+            if (playlist == null)
+            {
+                return NotFound();
+            }
+
+            _repoWrapper.Playlist.Delete(playlist);
+            _repoWrapper.Save();
+
+            return Ok(new { Success = true });
+
         }
     }
 }

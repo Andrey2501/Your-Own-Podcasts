@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using YOP.Models.PodcastModel;
+using YOP.Services;
 
 namespace PetControlBackend.Controllers
 {
@@ -24,10 +25,14 @@ namespace PetControlBackend.Controllers
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private IWebHostEnvironment _appEnvironment;
-        public PodcastController(IRepositoryWrapper repoWrapper, IWebHostEnvironment appEnvironment)
+        private StatisticService _statisticService;
+        public PodcastController(
+            IRepositoryWrapper repoWrapper,
+            IWebHostEnvironment appEnvironmente)
         {
             _repoWrapper = repoWrapper;
-            _appEnvironment = appEnvironment;
+            _appEnvironment = appEnvironmente;
+            _statisticService = new StatisticService(_repoWrapper);
         }
 
         [HttpPost, Authorize]
@@ -78,22 +83,30 @@ namespace PetControlBackend.Controllers
         [HttpGet, Route("list")]
         public IActionResult GetListPodcasts([FromQuery] PodcastsParametrs parameters)
         {
-            PagedList<Podcast> podcasts = _repoWrapper.Podcast.FindAll(parameters);
+            string strUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = string.IsNullOrEmpty(strUserId) ? new Guid(strUserId) : Guid.NewGuid();
+
+            PagedList <Podcast> podcasts = _repoWrapper.Podcast.FindAll(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
 
-            return Ok(podcasts);
+            List<PodcastGetModel> podcastModel = _statisticService.TransformPodcast(podcasts, userId);
+
+            return Ok(podcastModel);
         }
         [HttpGet, Route("user/list")]
         public IActionResult GetPodcastsOfUser([FromQuery] PodcastsUserIdParameters parameters)
         {
-            User user = _repoWrapper.User.FindByCondition(u => u.Id == parameters.UserId).FirstOrDefault();
+            User user = _repoWrapper.User
+                .FindByCondition(u => u.Id == parameters.UserId)
+                .FirstOrDefault();
+
             if (user == null)
             {
                 return NotFound("UserId is incorrect");
             }
             PagedList<Podcast> podcasts = _repoWrapper.Podcast.FindByUserId(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
-
+            
             return Ok(podcasts);
         }
 
@@ -105,6 +118,7 @@ namespace PetControlBackend.Controllers
             {
                 return BadRequest("PodcastId is incorrect");
             }
+
 
             return Ok(podcast);
         }
