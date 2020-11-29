@@ -124,5 +124,26 @@ namespace PetControlBackend.Controllers
 
             return PhysicalFile(filePath, podcast.ContentType);
         }
+
+        [HttpDelete("{id}"), Authorize]
+        public IActionResult DeleteById(Guid id)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string role = User.FindFirstValue(ClaimTypes.Role);
+            Podcast podcast = _repoWrapper.Podcast
+                .FindByCondition(p => p.Id == id && (p.UserId.ToString() == userId || role == "Admin"))
+                .FirstOrDefault();
+
+            if (podcast == null)
+            {
+                return NotFound();
+            }
+
+            _repoWrapper.Podcast.Delete(podcast);
+            _repoWrapper.Save();
+
+            return Ok(new { Success = true });
+
+        }
     }
 }
