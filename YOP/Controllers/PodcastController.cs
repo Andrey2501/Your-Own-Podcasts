@@ -106,8 +106,10 @@ namespace PetControlBackend.Controllers
             }
             PagedList<Podcast> podcasts = _repoWrapper.Podcast.FindByUserId(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
-            
-            return Ok(podcasts);
+
+            List<PodcastGetModel> podcastModel = _statisticService.TransformPodcast(podcasts, user.Id);
+
+            return Ok(podcastModel);
         }
 
         [HttpGet("{id}")]
