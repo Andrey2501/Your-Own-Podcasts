@@ -84,7 +84,7 @@ namespace PetControlBackend.Controllers
         public IActionResult GetListPodcasts([FromQuery] PodcastsParametrs parameters)
         {
             string strUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Guid userId = string.IsNullOrEmpty(strUserId) ? new Guid(strUserId) : Guid.NewGuid();
+            Guid userId = string.IsNullOrEmpty(strUserId) ? Guid.NewGuid() : new Guid(strUserId);
 
             PagedList <Podcast> podcasts = _repoWrapper.Podcast.FindAll(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
