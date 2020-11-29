@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using YOP.Models.UserModel;
 using Repository;
 using YOP.Services;
+using Entities.QueryModels;
 
 namespace PetControlBackend.Controllers
 {
@@ -58,7 +59,7 @@ namespace PetControlBackend.Controllers
         }
 
         [HttpGet, Route("list"), Authorize(Roles = "Admin")]
-        public IActionResult GetUserList([FromQuery] QueryStringParameters parameters)
+        public IActionResult GetUserList([FromQuery] UserParameters parameters)
         {
             PagedList<User> users = _repoWrapper.User.FindAll(parameters);
             var metadata = users.MetaData;

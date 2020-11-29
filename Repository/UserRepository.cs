@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Models;
+using Entities.QueryModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Repository
         {
             _repositoryContext = repositoryContext;
         }
-        public PagedList<User> FindAll(QueryStringParameters parameters)
+        public PagedList<User> FindAll(UserParameters parameters)
         {
             var users = FindAll();
             SearchByName(ref users, parameters.Name);

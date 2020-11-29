@@ -15,5 +15,7 @@ namespace Entities
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Playlist> Playlists { get; set; }
+        public DbSet<PodcastToPlaylist> PodcastToPlaylists { get; set; }
     }
 }

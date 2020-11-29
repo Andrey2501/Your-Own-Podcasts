@@ -8,6 +8,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.Models;
+using Entities.QueryModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,7 +45,6 @@ namespace PetControlBackend.Controllers
                 return BadRequest("UserId is incorrect");
             }
 
-
             Podcast podcast = new Podcast()
             {
                 UserId = user.Id,
@@ -76,9 +76,22 @@ namespace PetControlBackend.Controllers
         }
 
         [HttpGet, Route("list")]
-        public IActionResult GetListPocasts([FromQuery] QueryStringParameters parameters)
+        public IActionResult GetListPodcasts([FromQuery] PodcastsParametrs parameters)
         {
             PagedList<Podcast> podcasts = _repoWrapper.Podcast.FindAll(parameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
+
+            return Ok(podcasts);
+        }
+        [HttpGet, Route("user/list")]
+        public IActionResult GetPodcastsOfUser([FromQuery] PodcastsUserIdParameters parameters)
+        {
+            User user = _repoWrapper.User.FindByCondition(u => u.Id == parameters.UserId).FirstOrDefault();
+            if (user == null)
+            {
+                return NotFound("UserId is incorrect");
+            }
+            PagedList<Podcast> podcasts = _repoWrapper.Podcast.FindByUserId(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
 
             return Ok(podcasts);

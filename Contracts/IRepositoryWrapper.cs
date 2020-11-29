@@ -11,6 +11,8 @@ namespace Contracts
         IRatingRepository Rating { get; }
         ICommentRepository Comment { get; }
         ISubscriptionRepository Subscription { get; }
+        IPlaylistRepository Playlist { get; }
+        IPodcastToPlaylistRepository PodcastToPlaylist { get; }
         void Save();
     }
 }

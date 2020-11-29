@@ -14,6 +14,8 @@ namespace Repository
         private ICommentRepository _comment;
         private IRatingRepository _rating;
         private ISubscriptionRepository _subscription;
+        private IPlaylistRepository _playlist;
+        private IPodcastToPlaylistRepository _podcastToPlaylist;
         public IUserRepository User
         {
             get
@@ -67,6 +69,28 @@ namespace Repository
                     _rating = new RatingRepository(_repoContext);
                 }
                 return _rating;
+            }
+        }
+        public IPlaylistRepository Playlist
+        {
+            get
+            {
+                if (_playlist == null)
+                {
+                    _playlist = new PlaylistRepository(_repoContext);
+                }
+                return _playlist;
+            }
+        }
+        public IPodcastToPlaylistRepository PodcastToPlaylist
+        {
+            get
+            {
+                if (_podcastToPlaylist == null)
+                {
+                    _podcastToPlaylist = new PodcastToPlaylistRepository(_repoContext);
+                }
+                return _podcastToPlaylist;
             }
         }
         public RepositoryWrapper(RepositoryContext repositoryContext)
