@@ -10,5 +10,6 @@ namespace YOP.Models.PodcastModel
     {
         public bool IsLike { get; set; }
         public int CountLikes { get; set; } = 0;
+        public string AuthorName { get; set; }
     }
 }
