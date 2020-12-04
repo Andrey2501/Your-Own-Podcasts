@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PetControlBackend.Controllers.PodcastController">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABCAAAEAAAAAAAkAAAACAAAABBAAAAABAAAAA=</HashCode>
+      <FileName>Controllers\PodcastController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PetControlBackend.Controllers.UserController">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAkAAAAAAAAAAgAAAAAAgCAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\UserController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Controllers.AuthController">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAAAAAgAAABAAAAAAEQAAAAAAA=</HashCode>
+      <FileName>Controllers\AuthController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Controllers.CommentController">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAEAAAAAACAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>Controllers\CommentController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Controllers.PlaylistController">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAEAAAAAAAAAAAACAAAAAAAAACAAAABAA=</HashCode>
+      <FileName>Controllers\PlaylistController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Controllers.PodcastToPlaylistController">
+    <Position X="4" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABCAAAEAAAAAAAAAAAACAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Controllers\PodcastToPlaylistController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Controllers.RatingController">
+    <Position X="0.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\RatingController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Services.AuthService">
+    <Position X="5.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAEAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\AuthService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Services.StatisticService">
+    <Position X="7.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAsAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Services\StatisticService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YOP.Extensions.ServiceExtensions">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAAABCAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Extensions\ServiceExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

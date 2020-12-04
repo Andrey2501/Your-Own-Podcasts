@@ -77,7 +77,12 @@ namespace PetControlBackend.Controllers
             _repoWrapper.Podcast.Create(podcast);
             _repoWrapper.Save();
 
-            return Ok(new { PodcastId = podcast.Id });
+            var mapper = new Mapper(new MapperConfiguration(cfg =>
+                   cfg.CreateMap<Podcast, PodcastGetModel>()));
+            PodcastGetModel podcastGetModel = mapper
+                .Map<Podcast, PodcastGetModel>(podcast);
+
+            return Ok(podcastGetModel);
         }
 
         [HttpGet, Route("list")]

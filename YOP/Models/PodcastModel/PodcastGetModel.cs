@@ -9,6 +9,6 @@ namespace YOP.Models.PodcastModel
     public class PodcastGetModel : Podcast
     {
         public bool IsLike { get; set; }
-        public int CountLikes { get; set; }
+        public int CountLikes { get; set; } = 0;
     }
 }
