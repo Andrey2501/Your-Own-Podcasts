@@ -6,14 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
     class SubscriptionRepository : RepositoryBase<Subscription>, ISubscriptionRepository
     {
+        RepositoryContext repoContext;
         public SubscriptionRepository(RepositoryContext repositoryContext)
             : base(repositoryContext)
         {
+            repoContext = repositoryContext;
         }
 
         public PagedList<Subscription> FindByUser(SubscriptionParameters parameters)

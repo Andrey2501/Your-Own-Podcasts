@@ -89,5 +89,11 @@ namespace YOP.Controllers
             return Ok(new { Success = true });
 
         }
+
+        [HttpGet("test")]
+        public IActionResult getTestData()
+        { 
+            return Ok("all works");
+        }
     }
 }

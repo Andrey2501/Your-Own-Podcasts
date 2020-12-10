@@ -5,6 +5,7 @@ using Entities.QueryModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using YOP.Models.SubscriptionModel;
+using YOP.Services;
 
 namespace YOP.Controllers
 {
@@ -20,9 +22,11 @@ namespace YOP.Controllers
     public class SubscriptionController : ControllerBase
     {
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly StatisticService _statisticService;
         public SubscriptionController(IRepositoryWrapper repoWrapper)
         {
             _repoWrapper = repoWrapper;
+            _statisticService = new StatisticService(_repoWrapper);
         }
         [HttpPost, Authorize]
         public IActionResult Subscribe([FromBody]SubscriptionModel subscriptionModel)
@@ -76,16 +80,17 @@ namespace YOP.Controllers
             PagedList<Subscription> subscriptions = _repoWrapper.Subscription.FindByUser(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(subscriptions.MetaData));
 
-            return Ok(subscriptions);
+            List<SubscriptionGetModel> subscriptionGetModels = _statisticService.TransformSubscription(subscriptions);
+            return Ok(subscriptionGetModels);
         }
         [HttpGet, Route("subscribers/list")]
         public IActionResult GetListSubscribers([FromQuery] SubscriptionParameters parameters)
         {
-
             PagedList<Subscription> subscriptions = _repoWrapper.Subscription.FindByAuthor(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(subscriptions.MetaData));
 
-            return Ok(subscriptions);
+            List<SubscriptionGetModel> subscriptionGetModels = _statisticService.TransformSubscription(subscriptions);
+            return Ok(subscriptionGetModels);
         }
         [HttpDelete, Authorize]
         public IActionResult Delete([FromBody] SubscriptionModel subscriptionModel)

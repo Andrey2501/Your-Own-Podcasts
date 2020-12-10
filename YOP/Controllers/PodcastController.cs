@@ -65,6 +65,14 @@ namespace PetControlBackend.Controllers
                 podcast.ContentType = uploadedFile.ContentType;
                 podcast.FileName = $"{podcast.Id + extension}";
                 string path = Path.Combine(_appEnvironment.ContentRootPath, "Storage", $"{podcast.Id + extension}");
+                string subPath = Path.Combine(_appEnvironment.ContentRootPath, "Storage");
+
+                bool exists = Directory.Exists(subPath);
+
+                if (!exists) 
+                {
+                    Directory.CreateDirectory(subPath);
+                }
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
                     await uploadedFile.CopyToAsync(fileStream);
