@@ -93,7 +93,7 @@ namespace YOP.Controllers
             return Ok(subscriptionGetModels);
         }
         [HttpDelete, Authorize]
-        public IActionResult Delete([FromBody] SubscriptionModel subscriptionModel)
+        public IActionResult Delete([FromQuery] SubscriptionModel subscriptionModel)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             string role = User.FindFirstValue(ClaimTypes.Role);
