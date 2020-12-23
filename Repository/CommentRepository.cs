@@ -19,6 +19,7 @@ namespace Repository
 
         public PagedList<Comment> FindByPodcast(CommentParameters parameters)
         {
+
             var comments = FindByCondition(c => c.PodcastId == parameters.PodcastId);
 
             return PagedList<Comment>.ToPagedList(comments.OrderBy(c => c.PublicationDate),
