@@ -11,6 +11,7 @@ namespace Entities.Models
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid PodcastId { get; set; }
         public Guid PlaylistId { get; set; }
+        public Guid UserId { get; set; }
         public DateTime PublicationDate { get; set; }
     }
 }

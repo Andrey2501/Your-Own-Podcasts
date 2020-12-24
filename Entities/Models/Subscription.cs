@@ -10,7 +10,7 @@ namespace Entities.Models
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid UserId { get; set; }
-        public Guid PodcastId { get; set; }
+        public Guid AuthorId { get; set; }
         public DateTime SubcriptionDate { get; set; }
     }
 }

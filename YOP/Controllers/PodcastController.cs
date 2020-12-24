@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using YOP.Models.PodcastModel;
+using YOP.Services;
 
 namespace PetControlBackend.Controllers
 {
@@ -24,10 +25,14 @@ namespace PetControlBackend.Controllers
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private IWebHostEnvironment _appEnvironment;
-        public PodcastController(IRepositoryWrapper repoWrapper, IWebHostEnvironment appEnvironment)
+        private StatisticService _statisticService;
+        public PodcastController(
+            IRepositoryWrapper repoWrapper,
+            IWebHostEnvironment appEnvironmente)
         {
             _repoWrapper = repoWrapper;
-            _appEnvironment = appEnvironment;
+            _appEnvironment = appEnvironmente;
+            _statisticService = new StatisticService(_repoWrapper);
         }
 
         [HttpPost, Authorize]
@@ -60,6 +65,14 @@ namespace PetControlBackend.Controllers
                 podcast.ContentType = uploadedFile.ContentType;
                 podcast.FileName = $"{podcast.Id + extension}";
                 string path = Path.Combine(_appEnvironment.ContentRootPath, "Storage", $"{podcast.Id + extension}");
+                string subPath = Path.Combine(_appEnvironment.ContentRootPath, "Storage");
+
+                bool exists = Directory.Exists(subPath);
+
+                if (!exists) 
+                {
+                    Directory.CreateDirectory(subPath);
+                }
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
                     await uploadedFile.CopyToAsync(fileStream);
@@ -72,21 +85,34 @@ namespace PetControlBackend.Controllers
             _repoWrapper.Podcast.Create(podcast);
             _repoWrapper.Save();
 
-            return Ok(new { PodcastId = podcast.Id });
+            var mapper = new Mapper(new MapperConfiguration(cfg =>
+                   cfg.CreateMap<Podcast, PodcastGetModel>()));
+            PodcastGetModel podcastGetModel = mapper
+                .Map<Podcast, PodcastGetModel>(podcast);
+
+            return Ok(podcastGetModel);
         }
 
         [HttpGet, Route("list")]
         public IActionResult GetListPodcasts([FromQuery] PodcastsParametrs parameters)
         {
-            PagedList<Podcast> podcasts = _repoWrapper.Podcast.FindAll(parameters);
+            string strUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = string.IsNullOrEmpty(strUserId) ? Guid.NewGuid() : new Guid(strUserId);
+
+            PagedList <Podcast> podcasts = _repoWrapper.Podcast.FindAll(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
 
-            return Ok(podcasts);
+            List<PodcastGetModel> podcastModel = _statisticService.TransformPodcast(podcasts, userId);
+
+            return Ok(podcastModel);
         }
         [HttpGet, Route("user/list")]
         public IActionResult GetPodcastsOfUser([FromQuery] PodcastsUserIdParameters parameters)
         {
-            User user = _repoWrapper.User.FindByCondition(u => u.Id == parameters.UserId).FirstOrDefault();
+            User user = _repoWrapper.User
+                .FindByCondition(u => u.Id == parameters.UserId)
+                .FirstOrDefault();
+
             if (user == null)
             {
                 return NotFound("UserId is incorrect");
@@ -94,7 +120,9 @@ namespace PetControlBackend.Controllers
             PagedList<Podcast> podcasts = _repoWrapper.Podcast.FindByUserId(parameters);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(podcasts.MetaData));
 
-            return Ok(podcasts);
+            List<PodcastGetModel> podcastModel = _statisticService.TransformPodcast(podcasts, user.Id);
+
+            return Ok(podcastModel);
         }
 
         [HttpGet("{id}")]
@@ -105,6 +133,7 @@ namespace PetControlBackend.Controllers
             {
                 return BadRequest("PodcastId is incorrect");
             }
+
 
             return Ok(podcast);
         }
